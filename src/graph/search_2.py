@@ -13,11 +13,11 @@ import chainlit as cl
 from src.llm.gemini import gemini_model as model
 from src.model.article import Article
 from src.model.state.over_all import OverAllState
-from src.model.state.search import CrawlParallelState
+from src.model.state.search import CrawlParallelState,ExtractParallelState
 from src.repository.article import FireStoreArticleRepository
 from src.repository.article_raw_data import CloudStorageArticleRawRepository
 from src.repository.google_search import GoogleSearchRepository
-
+from src.repository.crawl import TavilyCrawlRepository
 
 @retry(tries=3)
 def make_search_words(state: OverAllState):
@@ -102,99 +102,106 @@ def get_search_urls(state: OverAllState):
     return {"search_state": state.search_state, "current_node": "get_search_urls"}
 
 
-def routing_parallel_crawl(state: OverAllState):
-    return [
-        Send(
-            "crawl_and_save",
-            {
-                "url": f"{url}",
-                "user_input": state.user_input,
-                "agenda": state.prepare_state.agenda,
-            },
-        )
-        for url in state.search_state.search_urls
-    ]
+def crawl_and_save(state: OverAllState):
+    repository = TavilyCrawlRepository()
+    results = repository.extract(state.search_state.search_urls)
 
-
-
-
-def crawl_and_save(raw_state: dict):
-    state = CrawlParallelState(**raw_state)
-
-    try:
-        results = app.crawl_url(
-            state.url,
-            params={"limit": 5, "scrapeOptions": {"formats": ["markdown"]}},
-            poll_interval=5,
-        )
-
-        full_text = result["data"][0]["markdown"]
-        extract_information = _extract_article_body(
-            full_text=full_text, user_question=state.user_input, agenda=state.agenda
-        )
+    for result in results:
+        url = result[0]
+        raw_text= result[1]
+        full_data = result[2]
 
         article_raw_data_repository = CloudStorageArticleRawRepository()
         save_file_path = f"{datetime.now().strftime('%Y%m%d%H%M%S')}.json"
         article_raw_data_repository.save_dict_to_json(
-            dict_data=result, file_name=save_file_path
+            dict_data=full_data, file_name=save_file_path
         )
 
         article = Article(
-            url=state.url,
-            user_question=state.user_input,
-            raw_data_path=save_file_path,
-            extract_information=extract_information,
-        )
+                url=url,
+                user_question=state.user_input,
+                raw_data_path=save_file_path,
+                raw_text=raw_text,
+                extract_information=None,
+            )
 
         article_repository = FireStoreArticleRepository()
-        article_repository.save(url=state.url, article=article)
+        article_repository.save(url=url, article=article)
 
-        print(f"Finish crawling {state.url}")
+        state.search_state.crawled_urls.append(url)
 
-    except Exception as e:
-        if "429" in str(e):
-            print(f"429エラーが発生しました。飛ばします。 {raw_state["url"]}")
-            # TODO: retry処理の実装
-            return None
-        print(f"Error crawling {state.url}: {e}")
-        return None
+        print(f"Finish crawl and raw-data save {url}")
 
-    else:
-        return {"crawled_url": [state.url]}
+    return {"search_state":state.search_state,"current_node": "crawl_and_save"}
+
+# def routing_parallel_crawl(state: OverAllState):
+#     return [
+#         Send(
+#             "process_article_and_save",
+#             {
+#                 "url": f"{url}",
+#                 "user_input": state.user_input,
+#                 "agenda": state.prepare_state.agenda,
+#                 "raw_text": raw_text,
+#                 "raw_data_path": raw_data_path
+#             },
+#         )
+#         for (url, raw_text,raw_data_path) in state.search_state.raw_crawl_results
+#     ]
+
+# def process_article_and_save(raw_state:dict):
+#     state = ExtractParallelState(**raw_state)
+
+#     extract_information = _extract_article_body(
+#         full_text =state.raw_text, user_question=state.user_input, agenda=state.agenda
+#     )
+#     print(f"Finish extracting article body {state.url}")
+
+#     article = Article(
+#             url=state.url,
+#             user_question=state.user_input,
+#             raw_data_path=state.raw_data_path,
+#             extract_information=extract_information,
+#         )
+
+#     article_repository = FireStoreArticleRepository()
+#     article_repository.save(url=state.url, article=article)
+
+#     return {"crawled_url": [state.url]}
 
 
-@retry(tries=3, exceptions=(Exception,))  # リトライ対象を明確化
-def _extract_article_body(full_text: str, user_question: str, agenda: str):
-    # プロンプト
-    prompt_template = PromptTemplate(
-        template="あなたはスクレイピングした情報から、関連する本文だけを抽出するエージェントです。\
-        {scrapying_result}に対して、広告などを削除し、記事の本文だけを抽出して下さい。 \
-        この記事は、以下質問に対し、以下議題で議論するために集めたものです。\
-        ## 質問\n\
-        {user_question}\n\
-        ## 議題\n\
-        {agenda}\n\
-        新しい情報などを加えてはいけませんし、要約してもいけません。\
-        出力は余計なものをつけず、本文の抽出だけを返して下さい。挨拶や補足も要りません。",
-        input_variables=[],
-        partial_variables={
-            "scrapying_result": full_text,
-            "user_question": user_question,
-            "agenda": agenda,
-        },
-    )
+# @retry(tries=3, exceptions=(Exception,))  # リトライ対象を明確化
+# def _extract_article_body(full_text: str, user_question: str, agenda: str):
+#     # プロンプト
+#     prompt_template = PromptTemplate(
+#         template="あなたはスクレイピングした情報から、関連する本文だけを抽出するエージェントです。\
+#         {scrapying_result}に対して、広告などを削除し、記事の本文だけを抽出して下さい。 \
+#         この記事は、以下質問に対し、以下議題で議論するために集めたものです。\
+#         ## 質問\n\
+#         {user_question}\n\
+#         ## 議題\n\
+#         {agenda}\n\
+#         新しい情報などを加えてはいけませんし、要約してもいけません。\
+#         出力は余計なものをつけず、本文の抽出だけを返して下さい。挨拶や補足も要りません。",
+#         input_variables=[],
+#         partial_variables={
+#             "scrapying_result": full_text,
+#             "user_question": user_question,
+#             "agenda": agenda,
+#         },
+#     )
 
-    prompt = prompt_template.format_prompt()
+#     prompt = prompt_template.format_prompt()
 
-    try:
-        # モデルの出力
-        model_output = model.invoke(prompt)
+#     try:
+#         # モデルの出力
+#         model_output = model.invoke(prompt)
 
-    except Exception as e:
-        print(f"Error extracting article body: {e}")
-        raise e
+#     except Exception as e:
+#         print(f"Error extracting article body: {e}")
+#         raise e
 
-    return model_output
+#     return model_output
 
 
 # def reflection_create_search_words(state: CrawlerState):

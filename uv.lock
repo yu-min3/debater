@@ -625,6 +625,7 @@ dependencies = [
     { name = "google-cloud-storage" },
     { name = "google-search-results" },
     { name = "googlesearch-python" },
+    { name = "graphviz" },
     { name = "ipykernel" },
     { name = "jupyter" },
     { name = "langchain" },
@@ -637,6 +638,7 @@ dependencies = [
     { name = "pandas" },
     { name = "python-dotenv" },
     { name = "retry" },
+    { name = "tavily-python" },
 ]
 
 [package.dev-dependencies]
@@ -655,6 +657,7 @@ requires-dist = [
     { name = "google-cloud-storage", specifier = ">=2.19.0" },
     { name = "google-search-results", specifier = ">=2.4.2" },
     { name = "googlesearch-python", specifier = ">=1.2.5" },
+    { name = "graphviz", specifier = ">=0.20.3" },
     { name = "ipykernel", specifier = ">=6.29.5" },
     { name = "jupyter", specifier = ">=1.1.1" },
     { name = "langchain", specifier = ">=0.3.13" },
@@ -667,6 +670,7 @@ requires-dist = [
     { name = "pandas", specifier = ">=2.2.3" },
     { name = "python-dotenv", specifier = ">=1.0.1" },
     { name = "retry", specifier = ">=0.9.2" },
+    { name = "tavily-python", specifier = ">=0.5.0" },
 ]
 
 [package.metadata.requires-dev]
@@ -1175,6 +1179,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/d4/69/b285059d1e3ab119eb9fd072aa3fd9da8da8867296e3cee4349bd74c2d63/googlesearch_python-1.2.5.tar.gz", hash = "sha256:3c23488374f477fb36e8e2975abc5e4e18794d898d8a2c9c9bf21a1440213e87", size = 4510 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/2e/5c/387b879de452c6c4b5400a52f1c0216aca3aa5740acfd93346f543a20133/googlesearch_python-1.2.5-py3-none-any.whl", hash = "sha256:28ef8ad737951b96ebe8963fbeb9bd2b45cae5c2533df1cc7cb8e72129a785f9", size = 4845 },
+]
+
+[[package]]
+name = "graphviz"
+version = "0.20.3"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/fa/83/5a40d19b8347f017e417710907f824915fba411a9befd092e52746b63e9f/graphviz-0.20.3.zip", hash = "sha256:09d6bc81e6a9fa392e7ba52135a9d49f1ed62526f96499325930e87ca1b5925d", size = 256455 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/00/be/d59db2d1d52697c6adc9eacaf50e8965b6345cc143f671e1ed068818d5cf/graphviz-0.20.3-py3-none-any.whl", hash = "sha256:81f848f2904515d8cd359cc611faba817598d2feaac4027b266aa3eda7b3dde5", size = 47126 },
 ]
 
 [[package]]
@@ -3962,6 +3975,20 @@ name = "syncer"
 version = "2.0.3"
 source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/8d/dd/d4dd75843692690d81f0a4b929212a1614b25d4896aa7c72f4c3546c7e3d/syncer-2.0.3.tar.gz", hash = "sha256:4340eb54b54368724a78c5c0763824470201804fe9180129daf3635cb500550f", size = 11512 }
+
+[[package]]
+name = "tavily-python"
+version = "0.5.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "httpx" },
+    { name = "requests" },
+    { name = "tiktoken" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ca/50/7f4acafe72ffd10d3578ddec76f993af5af81504bc7315ea54862f2705b9/tavily_python-0.5.0.tar.gz", hash = "sha256:2c60b88203b630e1b37fc711913a1090ced6719b3f21089f25ec06e9e1602822", size = 16455 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/90/99/05776f7150a5b3f8d853377144a3a634131964c0fce38307537674a9a674/tavily_python-0.5.0-py3-none-any.whl", hash = "sha256:e874f6a04a56cdda80a505fe0b4f5d61d25372bd52a83e6773926fb297dcaa29", size = 14361 },
+]
 
 [[package]]
 name = "tenacity"

@@ -36,6 +36,8 @@ class FireStoreArticleRepository:
         if not self.check_url_exists(key):
             raise ValueError(f"URL not found: {url}")
         article_content = self.article_collection.document(key).get().to_dict()
+        if "raw_text" not in article_content:
+            article_content["raw_text"] = ""
 
         return Article(**article_content)
 

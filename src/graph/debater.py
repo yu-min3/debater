@@ -17,15 +17,20 @@ from src.repository.article import FireStoreArticleRepository
 
 
 def make_reference_articles(state: OverAllState):
-    reference_urls = state.search_state.already_crawled_urls + state.crawled_url
+    print(state.search_state.already_crawled_urls)
+    reference_urls = state.search_state.already_crawled_urls + state.search_state.crawled_urls
     reference_articles = []
     article_repository = FireStoreArticleRepository()
     for url in reference_urls:
         article = article_repository.load(url)
+        if article.extract_information is not None:
+            reference_text = article.extract_information
+        else:
+            reference_text = article.raw_text
         reference_articles.append(
             (
                 url,
-                article.extract_information,
+                reference_text,
             )
         )
 
@@ -39,7 +44,7 @@ def make_reference_articles(state: OverAllState):
 
 
 @retry(tries=3)
-def answer(state: OverAllState):
+def report(state: OverAllState):
     output_parser = PydanticOutputParser(pydantic_object=DebaterResponse)
     # プロンプト
     prompt_template = PromptTemplate(
@@ -85,7 +90,7 @@ def answer(state: OverAllState):
 
     return {
         "debater_state": state.debater_state,
-        "current_node": "answer",
+        "current_node": "report",
     }
 
 

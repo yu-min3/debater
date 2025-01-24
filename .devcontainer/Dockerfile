@@ -9,3 +9,4 @@ FROM mcr.microsoft.com/vscode/devcontainers/base:$DEBIAN_VERSION
 LABEL maintainer="a5chin <a5chin.origin+contact@gmain.com>"
 
 COPY --from=uv --chown=vscode: /uv /uvx /bin/
+

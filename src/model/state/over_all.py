@@ -20,7 +20,6 @@ class OverAllState(BaseModel):
     debater_state: DebaterState = Field(
         default=DebaterState(), description="議論の状態"
     )
-    crawled_url: Annotated[list[str], operator.add]
 
     # self_reflection_state: SelfReflectionState = Field(
     #     default=SelfReflectionState(), description="リフレクションの状態"

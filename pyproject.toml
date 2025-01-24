@@ -29,6 +29,8 @@ dependencies = [
     "chainlit>=2.0.2",
     "google-cloud-firestore>=2.20.0",
     "google-cloud-storage>=2.19.0",
+    "graphviz>=0.20.3",
+    "tavily-python>=0.5.0",
 ]
 
 [tool.uv]

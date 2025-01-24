@@ -23,6 +23,9 @@ class SearchState(BaseModel):
     already_crawled_urls: Annotated[list[str], add_url] = Field(
         default=[], description="The urls that the agent has already crawled."
     )
+    raw_crawl_results: list[tuple[str, str,str]] = Field(
+        default=[], description="URLとクロールしたテキスト。"
+    )
 
 
 # 並列ノード間でのみ値を受け渡すState
@@ -30,3 +33,11 @@ class CrawlParallelState(BaseModel):
     url: str
     user_input: str
     agenda: str
+
+# 並列ノード間でのみ値を受け渡すState
+class ExtractParallelState(BaseModel):
+    url: str
+    user_input: str
+    agenda: str
+    raw_text:str
+    raw_data_path:str

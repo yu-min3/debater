@@ -7,7 +7,7 @@ FROM ghcr.io/astral-sh/uv:$UV_VERSION AS uv
 
 
 FROM python:$VARIANT-slim-$DEBIAN_VERSION
-LABEL maintainer="a5chin <a5chin.origin+contact@gmain.com>"
+LABEL maintainer="yu-min <>"
 
 ENV PYTHONDONTWRITEBYTECODE=True
 ENV PYTHONUNBUFFERED=True
@@ -17,5 +17,12 @@ WORKDIR /app
 
 COPY --from=uv /uv /uvx /bin/
 COPY pyproject.toml uv.lock ./
+COPY src/ ./src/
+COPY app.py ./ /app/
 
 RUN uv sync --frozen --no-install-project
+
+
+# ポートとエントリポイントを指定
+EXPOSE 8000
+CMD ["uv","run","chainlit", "run", "app.py", "--headless", "--port", "8001"]
