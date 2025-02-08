@@ -1,23 +1,20 @@
 from datetime import datetime
 from pprint import pprint
 
-
 # ライブラリのインポート
 from langchain.output_parsers import PydanticOutputParser
 from langchain.prompts import PromptTemplate
-from langgraph.types import Send
 from pydantic import BaseModel, Field
 from retry import retry
 
-import chainlit as cl
 from src.llm.gemini import gemini_model as model
 from src.model.article import Article
 from src.model.state.over_all import OverAllState
-from src.model.state.search import CrawlParallelState,ExtractParallelState
 from src.repository.article import FireStoreArticleRepository
 from src.repository.article_raw_data import CloudStorageArticleRawRepository
-from src.repository.google_search import GoogleSearchRepository
 from src.repository.crawl import TavilyCrawlRepository
+from src.repository.google_search import GoogleSearchRepository
+
 
 @retry(tries=3)
 def make_search_words(state: OverAllState):
@@ -108,7 +105,7 @@ def crawl_and_save(state: OverAllState):
 
     for result in results:
         url = result[0]
-        raw_text= result[1]
+        raw_text = result[1]
         full_data = result[2]
 
         article_raw_data_repository = CloudStorageArticleRawRepository()
@@ -118,12 +115,12 @@ def crawl_and_save(state: OverAllState):
         )
 
         article = Article(
-                url=url,
-                user_question=state.user_input,
-                raw_data_path=save_file_path,
-                raw_text=raw_text,
-                extract_information=None,
-            )
+            url=url,
+            user_question=state.user_input,
+            raw_data_path=save_file_path,
+            raw_text=raw_text,
+            extract_information=None,
+        )
 
         article_repository = FireStoreArticleRepository()
         article_repository.save(url=url, article=article)
@@ -132,95 +129,4 @@ def crawl_and_save(state: OverAllState):
 
         print(f"Finish crawl and raw-data save {url}")
 
-    return {"search_state":state.search_state,"current_node": "crawl_and_save"}
-
-# def routing_parallel_crawl(state: OverAllState):
-#     return [
-#         Send(
-#             "process_article_and_save",
-#             {
-#                 "url": f"{url}",
-#                 "user_input": state.user_input,
-#                 "agenda": state.prepare_state.agenda,
-#                 "raw_text": raw_text,
-#                 "raw_data_path": raw_data_path
-#             },
-#         )
-#         for (url, raw_text,raw_data_path) in state.search_state.raw_crawl_results
-#     ]
-
-# def process_article_and_save(raw_state:dict):
-#     state = ExtractParallelState(**raw_state)
-
-#     extract_information = _extract_article_body(
-#         full_text =state.raw_text, user_question=state.user_input, agenda=state.agenda
-#     )
-#     print(f"Finish extracting article body {state.url}")
-
-#     article = Article(
-#             url=state.url,
-#             user_question=state.user_input,
-#             raw_data_path=state.raw_data_path,
-#             extract_information=extract_information,
-#         )
-
-#     article_repository = FireStoreArticleRepository()
-#     article_repository.save(url=state.url, article=article)
-
-#     return {"crawled_url": [state.url]}
-
-
-# @retry(tries=3, exceptions=(Exception,))  # リトライ対象を明確化
-# def _extract_article_body(full_text: str, user_question: str, agenda: str):
-#     # プロンプト
-#     prompt_template = PromptTemplate(
-#         template="あなたはスクレイピングした情報から、関連する本文だけを抽出するエージェントです。\
-#         {scrapying_result}に対して、広告などを削除し、記事の本文だけを抽出して下さい。 \
-#         この記事は、以下質問に対し、以下議題で議論するために集めたものです。\
-#         ## 質問\n\
-#         {user_question}\n\
-#         ## 議題\n\
-#         {agenda}\n\
-#         新しい情報などを加えてはいけませんし、要約してもいけません。\
-#         出力は余計なものをつけず、本文の抽出だけを返して下さい。挨拶や補足も要りません。",
-#         input_variables=[],
-#         partial_variables={
-#             "scrapying_result": full_text,
-#             "user_question": user_question,
-#             "agenda": agenda,
-#         },
-#     )
-
-#     prompt = prompt_template.format_prompt()
-
-#     try:
-#         # モデルの出力
-#         model_output = model.invoke(prompt)
-
-#     except Exception as e:
-#         print(f"Error extracting article body: {e}")
-#         raise e
-
-#     return model_output
-
-
-# def reflection_create_search_words(state: CrawlerState):
-#     # google_search_technique.txtから文字列を取得
-#     with open("google_search_technique.txt") as f:
-#         google_search_technique = f.read()
-#     reflection_instructions = google_search_technique
-#     latest_reflection = state.reflections[-1]
-
-#     reflection_result = reflection(
-#         latest_reflection.task, latest_reflection.result, reflection_instructions
-#     )
-#     state.reflections[-1] = reflection_result
-#     if len(state.reflections) > state.max_reflection_num:
-#         needs_retry = False
-#     else:
-#         needs_retry = reflection_result.needs_retry
-
-#     print("reflection_create_search_words finish")
-#     print("needs_retry", needs_retry)
-
-#     return {"reflections": state.reflections, "needs_retry": needs_retry}
+    return {"search_state": state.search_state, "current_node": "crawl_and_save"}

@@ -3,7 +3,8 @@ import os
 import chainlit as cl
 from langgraph.graph.state import CompiledStateGraph
 
-from src.graph.compiled_graph import get_debater_graph
+from src.graph.debater.compiled_graph import get_debater_graph
+from src.graph.topic_provider.choose_topic import State, choose_topic
 from src.model.state.over_all import (
     DebaterState,
     OverAllState,
@@ -19,9 +20,20 @@ async def on_chat_start():
     app = get_debater_graph()
     cl.user_session.set("app", app)
     init_message = "ようこそ！\n\
-        これはあなたが持つ疑問に対し、複数人で議論を行うチャットボットシステムです！\n\
-        気になる議題を入力してみて下さい！"
+        これはあなたが持つ疑問に対し、AIエージェントが議論を行うチャットボットシステムです！\n\
+        気になる議題を入力してみて下さい！\n\
+        ...参考として、最近のニュースを探しています..."
     await cl.Message(content=init_message).send()
+    state = State()
+    topic = choose_topic(state)["choosed_topic"]
+    topic_string = "\n".join(
+        [f"{num+1}: {topic.title}" for num, topic in enumerate(topic)]
+    )
+    topic_message = (
+        "最近ではこんなことが話題になっているようです！\nこれら以外の議題でももちろん問題ありません！\n"
+        + topic_string
+    )
+    await cl.Message(content=topic_message).send()
 
 
 @cl.on_message
