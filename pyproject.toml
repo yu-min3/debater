@@ -1,10 +1,10 @@
 [project]
-name = "default"
+name = "debater"
 version = "0.1.0"
 description = "This repository contains configurations to set up a Python development environment using VSCode's Dev Container feature. The environment includes uv and Ruff."
 
-authors = [{ name = "a5chin", email = "a5chin.origin+contact@gmail.com" }]
-maintainers = [{ name = "a5chin", email = "a5chin.origin+contact@gmail.com" }]
+authors = [{ name = "yu-min3", email = "misaki.yu@eneos.com" }]
+maintainers = [{ name = "yu-min3", email = "misaki.yu@eneos.com" }]
 
 requires-python = ">=3.9"
 readme = "README.md"
