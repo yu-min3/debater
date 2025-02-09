@@ -11,7 +11,7 @@ class DebaterResponse(BaseModel):
     )
 
     @field_validator("conclusion")
-    def validate_conclusion(cls, value):
+    def validate_conclusion(cls, value: str) -> str:
         if len(value) > 100:
             raise ValueError(
                 "The length of the conclusion must be less than 100 characters."
@@ -26,7 +26,7 @@ class OpponentResponse(BaseModel):
     )
 
     @field_validator("conclusion")
-    def validate_conclusion(cls, value):
+    def validate_conclusion(cls, value: str) -> str:
         if len(value) > 100:
             raise ValueError(
                 "The length of the conclusion must be less than 100 characters."
@@ -79,7 +79,6 @@ class DebaterState(BaseModel):
 
             if history.opponent:  # 反論がある場合
                 markdown_output += f"## {counter_role_name}の反論：\n"
-                markdown_output += f"### summary: {history.opponent.summary}\n"
                 markdown_output += "### 反対理由:\n"
                 for reason in history.opponent.opposite_reasons:
                     markdown_output += f"- {reason}\n"
