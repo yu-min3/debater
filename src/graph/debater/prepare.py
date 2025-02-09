@@ -1,5 +1,3 @@
-from pprint import pprint
-
 # ライブラリのインポート
 from langchain.output_parsers import PydanticOutputParser
 from langchain.prompts import PromptTemplate
@@ -35,9 +33,5 @@ def prepare(state: OverAllState):
     # モデルの出力
     model_output = model.invoke(prompt)
     output = output_parser.parse(model_output)
-
-    # 表示用
-    print("prepare finish")
-    pprint(output.model_dump())
 
     return {"prepare_state": output, "current_node": "prepare"}

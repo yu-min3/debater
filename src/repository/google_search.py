@@ -34,11 +34,9 @@ class GoogleSearchRepository:
                 if res.get("items"):
                     items.extend(res["items"])  # 取得した結果をリストに追加
                 else:
-                    print(f"{start_index}以降の検索結果は見つかりませんでした。")
                     break  # 以降の結果がないためループを抜ける
 
         except Exception as e:
-            print(f"エラーが発生しました: {e}")
             raise e
 
         else:

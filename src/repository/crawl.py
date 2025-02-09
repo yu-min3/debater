@@ -36,8 +36,7 @@ class FireCrawlRepository:
                 full_text = result["data"][0]["markdown"]
                 results.append((url, full_text, result))
 
-            except Exception as e:
-                print(f"Error: {e}")
+            except Exception:
                 continue
 
         return results

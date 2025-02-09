@@ -24,6 +24,7 @@ async def on_chat_start():
         気になる議題を入力してみて下さい！\n\
         ...参考として、最近のニュースを探しています..."
     await cl.Message(content=init_message).send()
+
     state = State()
     topic = choose_topic(state)["choosed_topic"]
     topic_string = "\n".join(
@@ -126,19 +127,17 @@ def _make_search_words_message(search_state: SearchState):
 def _make_report_message(state: OverAllState):
     report_title = _make_title(f"{state.prepare_state.reporter_role.name}のレポート")
     conclusion_title = _make_subtitle("結論")
-    summary_title = _make_subtitle("概要")
-    evidence_title = _make_subtitle("参考記事")
+    reasons_title = _make_subtitle("理由")
 
     report = state.debater_state.report_history[-1].report
-    format_evidence = "\n".join(
-        [f"{num+1}: {evidence}" for num, evidence in enumerate(report.evidence)]
+    format_reasons = "\n".join(
+        [f"{num+1}: {reason}" for num, reason in enumerate(report.reasons)]
     )
 
     message = f"\
         {report_title}\n\
         {conclusion_title}\n{report.conclusion}\n\
-        {summary_title}\n{report.summary}\n\
-        {evidence_title}\n{format_evidence}"
+        {reasons_title}\n{format_reasons}\n"
     return message
 
 
@@ -146,7 +145,6 @@ def _make_opponent_message(state: OverAllState):
     opponent_title = _make_title(f"{state.prepare_state.opponent_role.name}の反対意見")
     conclusion_title = _make_subtitle("結論")
     reason_title = _make_subtitle("理由")
-    summary_title = _make_subtitle("概要")
 
     opponent = state.debater_state.report_history[-1].opponent
     format_opposite_reasons = "\n".join(
@@ -156,8 +154,7 @@ def _make_opponent_message(state: OverAllState):
     message = f"\
         {opponent_title} \n\
         {conclusion_title} \n{opponent.conclusion}\n\
-        {reason_title}\n{format_opposite_reasons}\n\
-        {summary_title}\n{opponent.summary}"
+        {reason_title}\n{format_opposite_reasons}\n"
     return message
 
 

@@ -1,42 +1,36 @@
 from pydantic import BaseModel, Field, field_validator
 
-REPORTER_CONCLUSION_CANDIDATES = [
-    "わからない",
-    "おそらく確からしい",
-    "かなり確からしい",
-    "断定的に確からしい",
-]
-OPPONENT_CONCULSION_CANDIDATES = [
-    "このレポートは信頼できる",
-    "このレポートには疑問点がいくつかある",
-    "このレポートは疑わしい",
-    "このレポートは明らかに信頼できない",
-]
-
 
 class DebaterResponse(BaseModel):
-    summary: str = Field(description="The summary of the information.")
-    conclusion: str = Field(description="Conclusion.")
+    conclusion: str = Field(description="結論。100文字以内で記述してください。")
+    reasons: list[str] = Field(
+        description="結論に至った理由。重要なものを合計で5個までに収めて下さい。各理由はそれぞれ200文字以内に収めて下さい。"
+    )
     evidence: list[str] = Field(
         description="List of URLs of information used as references in creating the report"
     )
 
     @field_validator("conclusion")
     def validate_conclusion(cls, value):
-        if value not in REPORTER_CONCLUSION_CANDIDATES:
-            raise ValueError("Invalid value for conclusion")
+        if len(value) > 100:
+            raise ValueError(
+                "The length of the conclusion must be less than 100 characters."
+            )
         return value
 
 
 class OpponentResponse(BaseModel):
-    summary: str = Field(description="The summary of the information.")
-    conclusion: str = Field(description="Conclusion.")
-    opposite_reasons: list[str] = Field(description="反対する理由")
+    conclusion: str = Field(description="結論。100文字以内で記述してください。")
+    opposite_reasons: list[str] = Field(
+        description="反対する理由。重要なものを合計で5個までに収めて下さい。各理由はそれぞれ200文字以内に収めて下さい。"
+    )
 
     @field_validator("conclusion")
     def validate_conclusion(cls, value):
-        if value not in OPPONENT_CONCULSION_CANDIDATES:
-            raise ValueError("Invalid value for conclusion")
+        if len(value) > 100:
+            raise ValueError(
+                "The length of the conclusion must be less than 100 characters."
+            )
         return value
 
 
@@ -76,7 +70,7 @@ class DebaterState(BaseModel):
             count += 1
             markdown_output += f"## {count}回目の議論：\n"
             markdown_output += f"## {role_name}の立場の意見：\n"
-            markdown_output += f"### summary: {history.report.summary}\n"
+            markdown_output += f"### summary: {history.report.reasons}\n"
             markdown_output += f"### evidence:{history.report.evidence}\n"
             for evidence in history.report.evidence:
                 markdown_output += f"- {evidence}\n"  # evidenceをリスト形式で表示

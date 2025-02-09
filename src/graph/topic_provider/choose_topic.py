@@ -1,5 +1,4 @@
 from datetime import datetime
-from pprint import pprint
 
 import feedparser
 
@@ -71,9 +70,6 @@ def choose_topic(state: State):
     output = output_parser.parse(model_output)
     state.choosed_topic = output.debate_topics
 
-    print("Finish choose topic")
-    pprint(state.choosed_topic)
-
     return {"choosed_topic": state.choosed_topic}
 
 
@@ -91,7 +87,6 @@ def crawl_and_save(state: State):
 
         titles = [topic.title for topic in state.choosed_topic if topic.url == url]
         if len(titles) != 1:
-            print(f"title is not found {url}")
             continue
 
         title = titles[0]
@@ -115,8 +110,6 @@ def crawl_and_save(state: State):
         article_repository.save(url=url, article=article)
         successed_topic.append((url, title))
 
-    print("Finish crawl and raw-data save")
-    pprint(successed_topic)
     return {"successed_topic": successed_topic}
 
 
@@ -145,7 +138,6 @@ def _extract_article_body(full_text: str, title: str):
         model_output = model.invoke(prompt)
 
     except Exception as e:
-        print(f"Error extracting article body: {e}")
         raise e
 
     return model_output

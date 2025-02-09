@@ -1,6 +1,3 @@
-import operator
-from typing import Annotated
-
 from pydantic import BaseModel, Field
 
 from src.model.state.debater import DebaterState
@@ -20,13 +17,3 @@ class OverAllState(BaseModel):
     debater_state: DebaterState = Field(
         default=DebaterState(), description="議論の状態"
     )
-
-    # self_reflection_state: SelfReflectionState = Field(
-    #     default=SelfReflectionState(), description="リフレクションの状態"
-    # )
-    # reflection_needs_retry: bool = Field(
-    #     default=True, description="リフレクションを再実行するかどうか"
-    # )
-    # reflection_task_id: str = Field(
-    #     default="", description="リフレクションを行うタスクのID"
-    # )

@@ -1,5 +1,4 @@
 from datetime import datetime
-from pprint import pprint
 
 # ライブラリのインポート
 from langchain.output_parsers import PydanticOutputParser
@@ -58,8 +57,6 @@ def make_search_words(state: OverAllState):
     output = output_parser.parse(model_output)
     state.search_state.search_words = output.google_search_words
 
-    print("make_search_words finish")
-    pprint(output.google_search_words)
     # reflection用の記録も追加
     return {
         "search_state": state.search_state,
@@ -93,9 +90,6 @@ def get_search_urls(state: OverAllState):
     state.search_state.already_crawled_urls = already_crawled_urls
     state.search_state.search_urls = search_urls
 
-    print("get_search_urls finish")
-    print(search_urls)
-
     return {"search_state": state.search_state, "current_node": "get_search_urls"}
 
 
@@ -126,7 +120,5 @@ def crawl_and_save(state: OverAllState):
         article_repository.save(url=url, article=article)
 
         state.search_state.crawled_urls.append(url)
-
-        print(f"Finish crawl and raw-data save {url}")
 
     return {"search_state": state.search_state, "current_node": "crawl_and_save"}
