@@ -3,7 +3,7 @@ from langchain.output_parsers import PydanticOutputParser
 from langchain.prompts import PromptTemplate
 from retry import retry
 
-from src.llm.gemini import gemini_model as model
+from src.llm.gemini import vertex_gemini_model as model
 from src.model.state.debater import (
     DebateHistory,
     DebaterResponse,

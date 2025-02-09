@@ -1,4 +1,4 @@
-from langchain_google_genai import GoogleGenerativeAI
+from langchain_google_vertexai import VertexAI
 
 MODEL_NAME = "gemini-2.0-flash-exp"
-gemini_model = GoogleGenerativeAI(model=MODEL_NAME)
+vertex_gemini_model = VertexAI(model_name=MODEL_NAME)

@@ -8,7 +8,7 @@ from langchain.prompts import PromptTemplate
 from pydantic import BaseModel, Field
 from retry import retry
 
-from src.llm.gemini import gemini_model as model
+from src.llm.gemini import vertex_gemini_model as model
 from src.model.article import Article
 from src.repository.article import FireStoreArticleRepository
 from src.repository.article_raw_data import CloudStorageArticleRawRepository

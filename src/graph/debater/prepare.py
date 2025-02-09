@@ -2,7 +2,7 @@
 from langchain.output_parsers import PydanticOutputParser
 from langchain.prompts import PromptTemplate
 
-from src.llm.gemini import gemini_model as model
+from src.llm.gemini import vertex_gemini_model as model
 from src.model.state.over_all import OverAllState
 from src.model.state.prepare import PrepareState
 
