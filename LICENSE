@@ -21,7 +21,5 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ## 変更点
-- オリジナルのリポジトリ: [username/repository-name](https://github.com/username/repository-name)
-- 主な変更点:
-  - 機能Aを追加
-  - バグBを修正
+- オリジナルのリポジトリ: https://github.com/a5chin/python-uv
+- uvで開発できる環境に、debaterサービスを構築

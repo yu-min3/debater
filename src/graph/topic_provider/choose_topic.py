@@ -117,13 +117,16 @@ def crawl_and_save(state: State):
 def _extract_article_body(full_text: str, title: str):
     # プロンプト
     prompt_template = PromptTemplate(
-        template="あなたはスクレイピングした情報からタイトルに関連する本文だけを抽出するエージェントです。\
-        {scrapying_result}に対して、広告などを削除し、記事の本文だけを抽出して下さい。 \
-        この記事は、以下質問に対し、以下議題で議論するために集めたものです。\
-        ## タイトル\n\
-        {title}\n\
-        新しい情報などを加えてはいけませんし、要約してもいけません。\
-        出力は余計なものをつけず、本文の抽出だけを返して下さい。挨拶や補足も要りません。",
+        template="""
+        あなたはスクレイピングした情報からタイトルに関連する本文だけを抽出するエージェントです。
+        {scrapying_result}に対して、広告などを削除し、記事の本文だけを抽出して下さい。
+        この記事は、以下質問に対し、以下議題で議論するために集めたものです。
+
+        ## タイトル
+        {title}
+
+        新しい情報などを加えてはいけませんし、要約してもいけません。
+        出力は余計なものをつけず、本文の抽出だけを返して下さい。挨拶や補足も要りません。""",
         input_variables=[],
         partial_variables={
             "scrapying_result": full_text,

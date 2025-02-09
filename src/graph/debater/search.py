@@ -29,16 +29,20 @@ def make_search_words(state: OverAllState):
     format_reflection = ""
 
     prompt_template = PromptTemplate(
-        template="あなたは以下議題に対して、{role_name},{role_description} の立場で情報を集めるエージェントです。\
-        ##　議題\n\
-        {agenda}\n\
-        google検索を行い、検索のための単語を入力してください。\
-        google_search_wordsに文字列リストを入力してください。\
-        例えば、日本の首都はどこになりますか？という質問に対して、[[日本,首都],[日本,首都,どこ]]などのように、\
-        google検索で有用な結果が返ってきそうな検索単語を出力します。\
-        リストは最大{max_search_words_num}個までです。\
-        以下の過去の振り返りを考慮すること\n{reflections}\n\
-        \n{format_instructions}\n",
+        template="""
+        あなたは以下議題に対して、{role_name},{role_description} の立場で情報を集めるエージェントです。
+
+        ##　議題
+        {agenda}
+
+        google検索を行い、検索のための単語を入力してください。
+        google_search_wordsに文字列リストを入力してください。
+        例えば、日本の首都はどこになりますか？という質問に対して、[[日本,首都],[日本,首都,どこ]]などのように、
+        google検索で有用な結果が返ってきそうな検索単語を出力します。
+        リストは最大{max_search_words_num}個までです。
+        以下の過去の振り返りを考慮すること\n{reflections}
+
+        \n{format_instructions}\n""",
         input_variables=[],
         partial_variables={
             "role_name": state.prepare_state.reporter_role.name,

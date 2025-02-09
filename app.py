@@ -19,10 +19,11 @@ async def on_chat_start():
     # セッションが開始したら、エージェントを作成してセッションに保存
     app = get_debater_graph()
     cl.user_session.set("app", app)
-    init_message = "ようこそ！\n\
-        これはあなたが持つ疑問に対し、AIエージェントが議論を行うチャットボットシステムです！\n\
-        気になる議題を入力してみて下さい！\n\
-        ...参考として、最近のニュースを探しています..."
+    init_message = """
+        ようこそ！
+        これはあなたが持つ疑問に対し、AIエージェントが議論を行うチャットボットシステムです！
+        気になる議題を入力してみて下さい！
+        ...参考として、最近のニュースを探しています..."""
     await cl.Message(content=init_message).send()
 
     state = State()
